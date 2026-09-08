@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Portal from "svelte-portal";
   import Frame from "./components/Frame.svelte";
 </script>
 

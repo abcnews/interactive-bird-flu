@@ -1,15 +1,19 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-
-  onMount(() => {
+  $effect(() => {
     const frameEl = document.querySelector('[data-key="journey"]');
+    frameEl?.classList.add("interactive-component-journey-frame");
     frameEl?.classList.add("u-full");
+
+    return () => {
+      frameEl?.classList.remove("interactive-component-journey-frame");
+      frameEl?.classList.remove("u-full");
+    };
   });
 </script>
 
 <style lang="scss">
   :global {
-    [data-key="journey"] {
+    .interactive-component-journey-frame {
       position: relative;
 
       figure[data-component="Figure"] {

@@ -26,7 +26,8 @@
   "dependencies": {
     "@abcnews/alternating-case-to-object": "^3.2.0",
     "@abcnews/env-utils": "^6.0.0",
-    "@abcnews/mount-utils": "^3.0.1"
+    "@abcnews/mount-utils": "^3.0.1",
+    "svelte-portal": "^2.2.1"
   },
   "contributors": [
     {
