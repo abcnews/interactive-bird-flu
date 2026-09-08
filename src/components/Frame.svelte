@@ -10,7 +10,7 @@
 
   type Coerced = boolean | null | number | string;
   type Annotation = {
-    text: string;
+    text: Coerced;
     top: number;
     left: number;
   };
@@ -27,6 +27,7 @@
 
       const value = getMountValue(mount);
       const parsedValues = parseCoreHash(value) as Annotation;
+      const annotationText = parsedValues.text;
       const decodedValues = {
         ...parsedValues,
         text: base62.decodeStr(
