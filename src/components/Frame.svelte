@@ -9,6 +9,11 @@
   const base62 = Base62Str.createInstance();
 
   type Coerced = boolean | null | number | string;
+  type Annotation = {
+    text: string;
+    top: number;
+    left: number;
+  };
 
   $effect(() => {
     const frameEl = document.querySelector('[data-key="journey"]');
@@ -17,11 +22,11 @@
 
     const mounts = selectMounts("annotation");
 
-    console.log(mounts);
-
     for (const mount of mounts) {
+      mount.classList.add("interactive-annotation-mount");
+
       const value = getMountValue(mount);
-      const parsedValues = parseCoreHash(value);
+      const parsedValues = parseCoreHash(value) as Annotation;
       const decodedValues = {
         ...parsedValues,
         text: base62.decodeStr(
@@ -29,12 +34,22 @@
         ),
       };
 
-      console.log(decodedValues);
+      mount.innerText = decodedValues.text;
+
+      mount.style.setProperty("--annotation-top", `${decodedValues.top}%`);
+      mount.style.setProperty("--annotation-left", `${decodedValues.left}%`);
     }
 
     return () => {
       frameEl?.classList.remove("interactive-component-journey-frame");
       frameEl?.classList.remove("u-full");
+
+      for (const mount of mounts) {
+        mount.classList.remove("interactive-annotation-mount");
+        mount.style.removeProperty("--annotation-top");
+        mount.style.removeProperty("--annotation-left");
+        mount.innerText = "";
+      }
     };
   });
 </script>
@@ -47,6 +62,12 @@
       figure[data-component="Figure"] {
         max-width: 100%;
         margin-inline: 0;
+      }
+      .interactive-annotation-mount {
+        position: absolute;
+        top: var(--annotation-top);
+        left: var(--annotation-left);
+        transform: translate(-50%, -50%);
       }
     }
   }
