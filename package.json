@@ -25,8 +25,11 @@
   },
   "dependencies": {
     "@abcnews/alternating-case-to-object": "^3.2.0",
+    "@abcnews/core-hash-converter": "npm:@jsr/abcnews__core-hash-converter@^0.1.4",
     "@abcnews/env-utils": "^6.0.0",
     "@abcnews/mount-utils": "^3.0.1",
+    "@funnylookinhat/base62": "npm:@jsr/funnylookinhat__base62@^1.0.7",
+    "base62str": "^2.0.0",
     "svelte-portal": "^2.2.1"
   },
   "contributors": [

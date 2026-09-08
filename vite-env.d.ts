@@ -7,3 +7,4 @@ declare module '*?raw' {
 }
 
 declare module "@abcnews/aunty/vite";
+// declare module "base62str"
