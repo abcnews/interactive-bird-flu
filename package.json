@@ -1,7 +1,7 @@
 {
   "name": "interactive-bird-flu",
   "private": true,
-  "version": "1.0.0-prerelease.0",
+  "version": "1.0.0-prerelease.1",
   "description": "A project generated from aunty's svelte project template.",
   "license": "MIT",
   "type": "module",
@@ -16,6 +16,7 @@
     "@sveltejs/vite-plugin-svelte": "^7.3.0",
     "@tsconfig/svelte": "^5.0.8",
     "@types/node": "^24.12.0",
+    "@types/tinycolor2": "^1.4.6",
     "prettier-plugin-svelte": "^3.5.1",
     "sass-embedded": "^1.104.0",
     "svelte": "^5.53.12",
@@ -30,7 +31,8 @@
     "@abcnews/mount-utils": "^3.0.1",
     "@funnylookinhat/base62": "npm:@jsr/funnylookinhat__base62@^1.0.7",
     "base62str": "^2.0.0",
-    "svelte-portal": "^2.2.1"
+    "svelte-portal": "^2.2.1",
+    "tinycolor2": "^1.6.0"
   },
   "contributors": [
     {

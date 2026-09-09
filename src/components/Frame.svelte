@@ -5,14 +5,16 @@
     type Coerced,
   } from "@abcnews/core-hash-converter";
   import { getMountValue, selectMounts } from "@abcnews/mount-utils";
+  import tinycolor from "tinycolor2";
 
   const base62 = Base62Str.createInstance();
 
   type Coerced = boolean | null | number | string;
   type Annotation = {
     text: Coerced;
-    top: number;
-    left: number;
+    colour: string;
+    top: number; // Percent
+    left: number; // Percent
   };
 
   $effect(() => {
@@ -20,7 +22,7 @@
     frameEl?.classList.add("interactive-component-journey-frame");
     frameEl?.classList.add("u-full");
 
-    const mounts = selectMounts("annotation");
+    const mounts = selectMounts("annotation", { includeOwnUsed: true });
 
     for (const mount of mounts) {
       mount.classList.add("interactive-annotation-mount");
@@ -39,6 +41,9 @@
 
       mount.style.setProperty("--annotation-top", `${decodedValues.top}%`);
       mount.style.setProperty("--annotation-left", `${decodedValues.left}%`);
+
+      const colour = tinycolor(decodedValues.colour);
+      mount.style.setProperty("--annotation-colour", colour.toHexString());
     }
 
     return () => {
@@ -66,6 +71,7 @@
       }
       .interactive-annotation-mount {
         position: absolute;
+        color: var(--annotation-colour);
         top: var(--annotation-top);
         left: var(--annotation-left);
         transform: translate(-50%, -50%);
