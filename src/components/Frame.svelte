@@ -9,12 +9,19 @@
 
   const base62 = Base62Str.createInstance();
 
-  type Coerced = boolean | null | number | string;
   type Annotation = {
     text: Coerced;
     colour: string;
-    top: number; // Percent
-    left: number; // Percent
+    top: number; // %
+    left: number; // %
+  };
+
+  type BoundingBox = {
+    topX: number; // %
+    topY: number; // %
+    bottomX: number; // %
+    bottomY: number; // %
+    colour: string;
   };
 
   $effect(() => {
@@ -45,6 +52,39 @@
       mount.style.setProperty("--annotation-colour", colour.toHexString());
     }
 
+    const boundingBoxMounts = selectMounts("boundingBox", {
+      includeOwnUsed: true,
+    });
+
+    for (const mount of boundingBoxMounts) {
+      mount.classList.add("interactive-boundingbox-mount");
+
+      const value = getMountValue(mount);
+      const { topX, topY, bottomX, bottomY, colour } = parseCoreHash(
+        value,
+      ) as BoundingBox;
+
+      mount.style.setProperty(
+        "--boundingbox-left",
+        `${Math.min(topX, bottomX)}%`,
+      );
+      mount.style.setProperty(
+        "--boundingbox-top",
+        `${Math.min(topY, bottomY)}%`,
+      );
+      mount.style.setProperty(
+        "--boundingbox-width",
+        `${Math.abs(bottomX - topX)}%`,
+      );
+      mount.style.setProperty(
+        "--boundingbox-height",
+        `${Math.abs(bottomY - topY)}%`,
+      );
+
+      const boxColour = tinycolor(colour);
+      mount.style.setProperty("--boundingbox-colour", boxColour.toHexString());
+    }
+
     return () => {
       frameEl?.classList.remove("interactive-component-journey-frame");
       frameEl?.classList.remove("u-full");
@@ -54,6 +94,15 @@
         mount.style.removeProperty("--annotation-top");
         mount.style.removeProperty("--annotation-left");
         mount.innerHTML = "";
+      }
+
+      for (const mount of boundingBoxMounts) {
+        mount.classList.remove("interactive-boundingbox-mount");
+        mount.style.removeProperty("--boundingbox-top");
+        mount.style.removeProperty("--boundingbox-left");
+        mount.style.removeProperty("--boundingbox-width");
+        mount.style.removeProperty("--boundingbox-height");
+        mount.style.removeProperty("--boundingbox-colour");
       }
     };
   });
@@ -97,6 +146,17 @@
           -webkit-text-stroke: 2px hsl(0deg, 0%, 98%);
           z-index: -1;
         }
+      }
+
+      .interactive-boundingbox-mount {
+        position: absolute;
+        top: var(--boundingbox-top);
+        left: var(--boundingbox-left);
+        width: var(--boundingbox-width);
+        height: var(--boundingbox-height);
+        border: 2px solid var(--boundingbox-colour);
+        box-sizing: border-box;
+        pointer-events: none;
       }
     }
   }
