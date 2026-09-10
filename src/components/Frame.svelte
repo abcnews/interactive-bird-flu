@@ -59,6 +59,10 @@
     for (const mount of boundingBoxMounts) {
       mount.classList.add("interactive-boundingbox-mount");
 
+      // Global styles target `div[id]:empty` and override our styles
+      // so let's make not empty to fix.
+      mount.innerHTML = "<span></span>";
+
       const value = getMountValue(mount);
       const { topX, topY, bottomX, bottomY, colour } = parseCoreHash(
         value,
@@ -91,6 +95,9 @@
 
       for (const mount of mounts) {
         mount.classList.remove("interactive-annotation-mount");
+
+        mount.innerHTML = "";
+
         mount.style.removeProperty("--annotation-top");
         mount.style.removeProperty("--annotation-left");
         mount.innerHTML = "";
@@ -157,6 +164,7 @@
         border: 2px solid var(--boundingbox-colour);
         box-sizing: border-box;
         pointer-events: none;
+        margin: 0;
       }
     }
   }
