@@ -43,7 +43,13 @@
         text: base62.decodeStr(annotationText),
       };
 
-      mount.innerHTML = `<span class="annotation-text" data-text="${decodedValues.text}">${decodedValues.text}</span>`;
+      const textContent = decodedValues.text;
+
+      const span = document.createElement("span");
+      span.className = "annotation-text";
+      span.textContent = textContent
+      span.setAttribute("data-text", textContent);
+      mount.replaceChildren(span);
 
       mount.style.setProperty("--annotation-top", `${decodedValues.top}%`);
       mount.style.setProperty("--annotation-left", `${decodedValues.left}%`);
@@ -95,16 +101,17 @@
 
       for (const mount of mounts) {
         mount.classList.remove("interactive-annotation-mount");
-
-        mount.innerHTML = "";
-
         mount.style.removeProperty("--annotation-top");
         mount.style.removeProperty("--annotation-left");
+        mount.style.removeProperty("--annotation-colour");
         mount.innerHTML = "";
       }
 
       for (const mount of boundingBoxMounts) {
         mount.classList.remove("interactive-boundingbox-mount");
+
+        mount.innerHTML = "";
+
         mount.style.removeProperty("--boundingbox-top");
         mount.style.removeProperty("--boundingbox-left");
         mount.style.removeProperty("--boundingbox-width");
