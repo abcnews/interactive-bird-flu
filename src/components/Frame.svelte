@@ -57,34 +57,6 @@
       includeOwnUsed: true,
     });
 
-    // for (const mount of mounts) {
-    //   mount.classList.add("interactive-annotation-mount");
-
-    //   const value = getMountValue(mount);
-    //   const parsedValues = parseCoreHash(value) as Annotation;
-    //   const annotationText =
-    //     typeof parsedValues.text === "string" ? parsedValues.text : "";
-    //   const decodedValues = {
-    //     ...parsedValues,
-    //     text: base62.decodeStr(annotationText),
-    //   };
-
-    //   const textContent = decodedValues.text;
-
-    //   const span = document.createElement("span");
-
-    //   span.className = "annotation-text";
-    //   span.textContent = textContent;
-    //   span.setAttribute("data-text", textContent);
-    //   mount.replaceChildren(span);
-
-    //   mount.style.setProperty("--annotation-top", `${decodedValues.top}%`);
-    //   mount.style.setProperty("--annotation-left", `${decodedValues.left}%`);
-
-    //   const colour = tinycolor(decodedValues.colour);
-    //   mount.style.setProperty("--annotation-colour", colour.toHexString());
-    // }
-
     for (const mount of annotationMounts) {
       mount.classList.add("interactive-annotation-mount");
 
