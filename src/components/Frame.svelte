@@ -12,15 +12,15 @@
   type Annotation = {
     text: Coerced;
     colour: string;
-    top: number; // %
-    left: number; // %
+    top: number;
+    left: number;
   };
 
   type BoundingBox = {
-    topX: number; // %
-    topY: number; // %
-    bottomX: number; // %
-    bottomY: number; // %
+    topX: number;
+    topY: number;
+    bottomX: number;
+    bottomY: number;
     colour: string;
   };
 
@@ -28,6 +28,9 @@
     const frameEl = document.querySelector('[data-key="journey"]');
     frameEl?.classList.add("interactive-component-journey-frame");
     frameEl?.classList.add("u-full");
+
+    // Annotation text mounts
+    // ----------------------
 
     const mounts = selectMounts("annotation", { includeOwnUsed: true });
 
@@ -46,8 +49,9 @@
       const textContent = decodedValues.text;
 
       const span = document.createElement("span");
+
       span.className = "annotation-text";
-      span.textContent = textContent
+      span.textContent = textContent;
       span.setAttribute("data-text", textContent);
       mount.replaceChildren(span);
 
@@ -57,6 +61,9 @@
       const colour = tinycolor(decodedValues.colour);
       mount.style.setProperty("--annotation-colour", colour.toHexString());
     }
+
+    // Bounting box mounts
+    // -------------------
 
     const boundingBoxMounts = selectMounts("boundingBox", {
       includeOwnUsed: true,
@@ -95,6 +102,7 @@
       mount.style.setProperty("--boundingbox-colour", boxColour.toHexString());
     }
 
+    // Cleanup function (put everything back how we found it)
     return () => {
       frameEl?.classList.remove("interactive-component-journey-frame");
       frameEl?.classList.remove("u-full");
