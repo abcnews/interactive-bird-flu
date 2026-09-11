@@ -6,23 +6,44 @@
   } from "@abcnews/core-hash-converter";
   import { getMountValue, selectMounts } from "@abcnews/mount-utils";
   import tinycolor from "tinycolor2";
+  import * as v from "@valibot/valibot";
 
   const base62 = Base62Str.createInstance();
 
-  type Annotation = {
-    text: Coerced;
-    colour: string;
-    top: number;
-    left: number;
-  };
+  /** 0–100, as authored in the hash. */
+  const Percent = v.pipe(v.number(), v.minValue(0), v.maxValue(100));
 
-  type BoundingBox = {
-    topX: number;
-    topY: number;
-    bottomX: number;
-    bottomY: number;
-    colour: string;
-  };
+  /** Any tinycolor-parseable colour, normalised to a hex string. */
+  const Colour = v.pipe(
+    v.string(),
+    v.check((s) => tinycolor(s).isValid(), "Not a recognised colour"),
+    v.transform((s) => tinycolor(s).toHexString()),
+  );
+
+  /** Base62 output can be all digits, so `coerce` may hand us a number. */
+  const Base62Text = v.pipe(
+    v.union([v.string(), v.pipe(v.number(), v.transform(String))]),
+    v.transform((s) => base62.decodeStr(s)),
+  );
+
+  const AnnotationSchema = v.object({
+    text: Base62Text,
+    colour: v.optional(Colour, "#DB7093"),
+    top: v.optional(Percent, 50),
+    left: v.optional(Percent, 50),
+  });
+
+  const BoundingBoxSchema = v.object({
+    topX: Percent,
+    topY: Percent,
+    bottomX: Percent,
+    bottomY: Percent,
+    colour: v.optional(Colour, "aqua"),
+    strokeWidth: v.optional(v.pipe(v.number(), v.minValue(0)), 2),
+  });
+
+  type Annotation = v.InferOutput<typeof AnnotationSchema>;
+  type BoundingBox = v.InferOutput<typeof BoundingBoxSchema>;
 
   $effect(() => {
     const frameEl = document.querySelector('[data-key="journey"]');
@@ -32,34 +53,64 @@
     // Annotation text mounts
     // ----------------------
 
-    const mounts = selectMounts("annotation", { includeOwnUsed: true });
+    const annotationMounts = selectMounts("annotation", {
+      includeOwnUsed: true,
+    });
 
-    for (const mount of mounts) {
+    // for (const mount of mounts) {
+    //   mount.classList.add("interactive-annotation-mount");
+
+    //   const value = getMountValue(mount);
+    //   const parsedValues = parseCoreHash(value) as Annotation;
+    //   const annotationText =
+    //     typeof parsedValues.text === "string" ? parsedValues.text : "";
+    //   const decodedValues = {
+    //     ...parsedValues,
+    //     text: base62.decodeStr(annotationText),
+    //   };
+
+    //   const textContent = decodedValues.text;
+
+    //   const span = document.createElement("span");
+
+    //   span.className = "annotation-text";
+    //   span.textContent = textContent;
+    //   span.setAttribute("data-text", textContent);
+    //   mount.replaceChildren(span);
+
+    //   mount.style.setProperty("--annotation-top", `${decodedValues.top}%`);
+    //   mount.style.setProperty("--annotation-left", `${decodedValues.left}%`);
+
+    //   const colour = tinycolor(decodedValues.colour);
+    //   mount.style.setProperty("--annotation-colour", colour.toHexString());
+    // }
+
+    for (const mount of annotationMounts) {
       mount.classList.add("interactive-annotation-mount");
 
-      const value = getMountValue(mount);
-      const parsedValues = parseCoreHash(value) as Annotation;
-      const annotationText =
-        typeof parsedValues.text === "string" ? parsedValues.text : "";
-      const decodedValues = {
-        ...parsedValues,
-        text: base62.decodeStr(annotationText),
-      };
+      const mountValue = getMountValue(mount);
 
-      const textContent = decodedValues.text;
+      const parsedResult = v.safeParse(
+        AnnotationSchema,
+        parseCoreHash(mountValue),
+      );
+
+      if (!parsedResult.success) {
+        console.warn(parsedResult.issues);
+        continue;
+      }
+
+      const { text, colour, top, left } = parsedResult.output;
 
       const span = document.createElement("span");
-
       span.className = "annotation-text";
-      span.textContent = textContent;
-      span.setAttribute("data-text", textContent);
+      span.textContent = text;
+      span.setAttribute("data-text", text);
       mount.replaceChildren(span);
 
-      mount.style.setProperty("--annotation-top", `${decodedValues.top}%`);
-      mount.style.setProperty("--annotation-left", `${decodedValues.left}%`);
-
-      const colour = tinycolor(decodedValues.colour);
-      mount.style.setProperty("--annotation-colour", colour.toHexString());
+      mount.style.setProperty("--annotation-top", `${top}%`);
+      mount.style.setProperty("--annotation-left", `${left}%`);
+      mount.style.setProperty("--annotation-colour", colour);
     }
 
     // Bounting box mounts
@@ -76,10 +127,19 @@
       // so let's make not empty to fix.
       mount.innerHTML = "<span></span>";
 
-      const value = getMountValue(mount);
-      const { topX, topY, bottomX, bottomY, colour } = parseCoreHash(
-        value,
-      ) as BoundingBox;
+      const mountValue = getMountValue(mount);
+
+      const parsedResult = v.safeParse(
+        BoundingBoxSchema,
+        parseCoreHash(mountValue),
+      );
+
+      if (!parsedResult.success) {
+        console.warn(parsedResult.issues);
+        continue;
+      }
+
+      const { topX, topY, bottomX, bottomY, colour } = parsedResult.output;
 
       mount.style.setProperty(
         "--boundingbox-left",
@@ -107,7 +167,7 @@
       frameEl?.classList.remove("interactive-component-journey-frame");
       frameEl?.classList.remove("u-full");
 
-      for (const mount of mounts) {
+      for (const mount of annotationMounts) {
         mount.classList.remove("interactive-annotation-mount");
         mount.style.removeProperty("--annotation-top");
         mount.style.removeProperty("--annotation-left");
@@ -180,6 +240,7 @@
         box-sizing: border-box;
         pointer-events: none;
         margin: 0;
+        border-radius: 6px;
       }
     }
   }
