@@ -1,3 +1,4 @@
 {
-  "preferPackageJson": true
+  "preferPackageJson": true,
+  "minimumDependencyAge": "PT21M"
 }

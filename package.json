@@ -26,10 +26,11 @@
   },
   "dependencies": {
     "@abcnews/alternating-case-to-object": "^3.2.0",
-    "@abcnews/core-hash-converter": "npm:@jsr/abcnews__core-hash-converter@^0.1.4",
+    "@abcnews/core-hash-converter": "npm:@jsr/abcnews__core-hash-converter@^0.2.1",
     "@abcnews/env-utils": "^6.0.0",
     "@abcnews/mount-utils": "^3.0.1",
     "@funnylookinhat/base62": "npm:@jsr/funnylookinhat__base62@^1.0.7",
+    "@valibot/valibot": "npm:@jsr/valibot__valibot@^1.5.0",
     "base62str": "^2.0.0",
     "svelte-portal": "^2.2.1",
     "tinycolor2": "^1.6.0"

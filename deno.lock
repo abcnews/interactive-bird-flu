@@ -5,8 +5,9 @@
     "npm:@abcnews/aunty@^17.0.0-next.7": "17.0.0-next.9",
     "npm:@abcnews/env-utils@6": "6.1.0",
     "npm:@abcnews/mount-utils@^3.0.1": "3.0.1",
-    "npm:@jsr/abcnews__core-hash-converter@~0.1.4": "0.1.4",
+    "npm:@jsr/abcnews__core-hash-converter@~0.2.1": "0.2.1",
     "npm:@jsr/funnylookinhat__base62@^1.0.7": "1.0.7",
+    "npm:@jsr/valibot__valibot@^1.5.0": "1.5.0",
     "npm:@sveltejs/vite-plugin-svelte@^7.3.0": "7.3.0_svelte@5.57.0_vite@8.2.2_@types+node@24.13.3_sass-embedded@1.104.0",
     "npm:@tsconfig/svelte@^5.0.8": "5.0.8",
     "npm:@types/node@^24.12.0": "24.13.3",
@@ -226,13 +227,17 @@
         "@jridgewell/sourcemap-codec"
       ]
     },
-    "@jsr/abcnews__core-hash-converter@0.1.4": {
-      "integrity": "sha512-9E898Wewnxzr0WmRYYPE2p1+m/dAhrxZ9a6X/r+MdxnW3FU+Fw7+opP8vzTSmweZCTeHbr2Dq2t7JP0ZMnIb0Q==",
-      "tarball": "https://npm.jsr.io/~/11/@jsr/abcnews__core-hash-converter/0.1.4.tgz"
+    "@jsr/abcnews__core-hash-converter@0.2.1": {
+      "integrity": "sha512-iismGQ9HtCGm5y/tJWf4hEIDCrvRiandp6pw9e+eBzoarluY4WD5xbP7e4Wzyq5itS6qm2yaVaj0c353+Qju5Q==",
+      "tarball": "https://npm.jsr.io/~/11/@jsr/abcnews__core-hash-converter/0.2.1.tgz"
     },
     "@jsr/funnylookinhat__base62@1.0.7": {
       "integrity": "sha512-EH4NXJzq5n4Dy37RRcD6EshGouKJ2/9Tq5FVd/2KDDYYN4i4/K9r/2gCNxSqNwriN75Bg1ZzfFz4lo3Go79qLA==",
       "tarball": "https://npm.jsr.io/~/11/@jsr/funnylookinhat__base62/1.0.7.tgz"
+    },
+    "@jsr/valibot__valibot@1.5.0": {
+      "integrity": "sha512-7oknR+alQF6l2jE/r3pKuZjwTCmSDSEAbNg8W3SH+S5w4yeOczOvW2HC/R6bpe61Cr3X1OQBxbtZWVWLiNnAiw==",
+      "tarball": "https://npm.jsr.io/~/11/@jsr/valibot__valibot/1.5.0.tgz"
     },
     "@oxc-project/types@0.148.0": {
       "integrity": "sha512-Nm4s/jB+4FpFsPhWGEC4h7rzksesmtnMXomo6rCMcg/b8zLQuOziRgkCS1fxDCXOlJB/6Q8oABOZ/OP6RIPj9A=="
@@ -1029,8 +1034,9 @@
         "npm:@abcnews/aunty@^17.0.0-next.7",
         "npm:@abcnews/env-utils@6",
         "npm:@abcnews/mount-utils@^3.0.1",
-        "npm:@jsr/abcnews__core-hash-converter@~0.1.4",
+        "npm:@jsr/abcnews__core-hash-converter@~0.2.1",
         "npm:@jsr/funnylookinhat__base62@^1.0.7",
+        "npm:@jsr/valibot__valibot@^1.5.0",
         "npm:@sveltejs/vite-plugin-svelte@^7.3.0",
         "npm:@tsconfig/svelte@^5.0.8",
         "npm:@types/node@^24.12.0",
