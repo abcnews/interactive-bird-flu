@@ -1,9 +1,6 @@
 <script lang="ts">
   import Base62Str from "base62str";
-  import {
-    parse as parseCoreHash,
-    type Coerced,
-  } from "@abcnews/core-hash-converter";
+  import { parse as parseCoreHash } from "@abcnews/core-hash-converter";
   import { getMountValue, selectMounts } from "@abcnews/mount-utils";
   import tinycolor from "tinycolor2";
   import * as v from "@valibot/valibot";
@@ -68,12 +65,6 @@
     BoundingBoxSchema,
   );
 
-  // Types
-  // -----
-
-  type Annotation = v.InferOutput<typeof AnnotationSchema>;
-  type BoundingBox = v.InferOutput<typeof BoundingBoxSchema>;
-
   $effect(() => {
     const frameEl = document.querySelector('[data-key="journey"]');
     frameEl?.classList.add("interactive-component-journey-frame");
@@ -87,8 +78,6 @@
     });
 
     for (const mount of annotationMounts) {
-      mount.classList.add("interactive-annotation-mount");
-
       const validatedResult = v.safeParse(
         AnnotationFromHash,
         getMountValue(mount),
@@ -96,8 +85,10 @@
 
       if (!validatedResult.success) {
         console.warn(validatedResult.issues);
-        continue;
+        continue; // Go to next mount
       }
+
+      mount.classList.add("interactive-annotation-mount");
 
       const { text, colour, top, left } = validatedResult.output;
 
@@ -112,7 +103,7 @@
       mount.style.setProperty("--annotation-colour", colour);
     }
 
-    // Bounting box mounts
+    // Bounding box mounts
     // -------------------
 
     const boundingBoxMounts = selectMounts("boundingBox", {
@@ -120,12 +111,6 @@
     });
 
     for (const mount of boundingBoxMounts) {
-      mount.classList.add("interactive-boundingbox-mount");
-
-      // Global styles target `div[id]:empty` and override our styles
-      // so let's make not empty to fix.
-      mount.innerHTML = "<span></span>";
-
       const validatedResult = v.safeParse(
         BoundingBoxFromHash,
         getMountValue(mount),
@@ -133,10 +118,25 @@
 
       if (!validatedResult.success) {
         console.warn(validatedResult.issues);
-        continue;
+        continue; // Go to next mount
       }
 
-      const { topX, topY, bottomX, bottomY, colour } = validatedResult.output;
+      mount.classList.add("interactive-boundingbox-mount");
+
+      // The DLS global styles shift `div[id]:empty` and `a:not([href])[id]:empty`
+      // up by 2.7rem below 543px, which overrides our absolute positioning.
+      // A child element stops the `:empty` selector matching. Don't remove.
+      mount.innerHTML = "<span></span>";
+
+      const {
+        topX,
+        topY,
+        bottomX,
+        bottomY,
+        colour,
+        strokeWidth,
+        borderRadius,
+      } = validatedResult.output;
 
       mount.style.setProperty(
         "--boundingbox-left",
@@ -154,9 +154,12 @@
         "--boundingbox-height",
         `${Math.abs(bottomY - topY)}%`,
       );
-
-      const boxColour = tinycolor(colour);
-      mount.style.setProperty("--boundingbox-colour", boxColour.toHexString());
+      mount.style.setProperty("--boundingbox-colour", colour);
+      mount.style.setProperty("--boundingbox-stroke-width", `${strokeWidth}px`);
+      mount.style.setProperty(
+        "--boundingbox-border-radius",
+        `${borderRadius}px`,
+      );
     }
 
     // Cleanup function (put everything back how we found it)
@@ -182,6 +185,8 @@
         mount.style.removeProperty("--boundingbox-width");
         mount.style.removeProperty("--boundingbox-height");
         mount.style.removeProperty("--boundingbox-colour");
+        mount.style.removeProperty("--boundingbox-stroke-width");
+        mount.style.removeProperty("--boundingbox-border-radius");
       }
     };
   });
@@ -233,11 +238,13 @@
         left: var(--boundingbox-left);
         width: var(--boundingbox-width);
         height: var(--boundingbox-height);
-        border: 2px solid var(--boundingbox-colour);
+        border-width: var(--boundingbox-stroke-width);
+        border-color: var(--boundingbox-colour);
+        border-radius: var(--boundingbox-border-radius);
+        border-style: solid;
         box-sizing: border-box;
         pointer-events: none;
         margin: 0;
-        border-radius: 6px;
       }
     }
   }
