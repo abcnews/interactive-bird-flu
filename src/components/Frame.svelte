@@ -10,6 +10,14 @@
 
   const base62 = Base62Str.createInstance();
 
+  const DEFAULTS = {
+    annotation: { colour: "#DB7093", top: 50, left: 50 },
+    boundingBox: { colour: "aqua", strokeWidth: 2 },
+  } as const;
+
+  // Valibot schemas
+  // ---------------
+
   /** 0–100, as authored in the hash. */
   const Percent = v.pipe(v.number(), v.minValue(0), v.maxValue(100));
 
@@ -28,9 +36,9 @@
 
   const AnnotationSchema = v.object({
     text: Base62Text,
-    colour: v.optional(Colour, "#DB7093"),
-    top: v.optional(Percent, 50),
-    left: v.optional(Percent, 50),
+    colour: v.optional(Colour, DEFAULTS.annotation.colour),
+    top: v.optional(Percent, DEFAULTS.annotation.top),
+    left: v.optional(Percent, DEFAULTS.annotation.left),
   });
 
   const BoundingBoxSchema = v.object({
@@ -38,9 +46,15 @@
     topY: Percent,
     bottomX: Percent,
     bottomY: Percent,
-    colour: v.optional(Colour, "aqua"),
-    strokeWidth: v.optional(v.pipe(v.number(), v.minValue(0)), 2),
+    colour: v.optional(Colour, DEFAULTS.boundingBox.colour),
+    strokeWidth: v.optional(
+      v.pipe(v.number(), v.minValue(0)),
+      DEFAULTS.boundingBox.strokeWidth,
+    ),
   });
+
+  // Types
+  // -----
 
   type Annotation = v.InferOutput<typeof AnnotationSchema>;
   type BoundingBox = v.InferOutput<typeof BoundingBoxSchema>;
