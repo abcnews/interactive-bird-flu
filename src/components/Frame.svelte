@@ -12,7 +12,7 @@
 
   const DEFAULTS = {
     annotation: { colour: "#DB7093", top: 50, left: 50 },
-    boundingBox: { colour: "aqua", strokeWidth: 2 },
+    boundingBox: { colour: "aqua", strokeWidth: 2, borderRadius: 6 },
   } as const;
 
   // Valibot schemas
@@ -41,6 +41,13 @@
     left: v.optional(Percent, DEFAULTS.annotation.left),
   });
 
+  const AnnotationFromHash = v.pipe(
+    v.string("Expected a mount value"),
+    v.nonEmpty("Mount value is empty"),
+    v.transform(parseCoreHash),
+    AnnotationSchema,
+  );
+
   const BoundingBoxSchema = v.object({
     topX: Percent,
     topY: Percent,
@@ -51,7 +58,15 @@
       v.pipe(v.number(), v.minValue(0)),
       DEFAULTS.boundingBox.strokeWidth,
     ),
+    borderRadius: v.optional(v.number(), DEFAULTS.boundingBox.borderRadius),
   });
+
+  const BoundingBoxFromHash = v.pipe(
+    v.string("Expected a mount value"),
+    v.nonEmpty("Mount value is empty"),
+    v.transform(parseCoreHash),
+    BoundingBoxSchema,
+  );
 
   // Types
   // -----
@@ -74,19 +89,17 @@
     for (const mount of annotationMounts) {
       mount.classList.add("interactive-annotation-mount");
 
-      const mountValue = getMountValue(mount);
-
-      const parsedResult = v.safeParse(
-        AnnotationSchema,
-        parseCoreHash(mountValue),
+      const validatedResult = v.safeParse(
+        AnnotationFromHash,
+        getMountValue(mount),
       );
 
-      if (!parsedResult.success) {
-        console.warn(parsedResult.issues);
+      if (!validatedResult.success) {
+        console.warn(validatedResult.issues);
         continue;
       }
 
-      const { text, colour, top, left } = parsedResult.output;
+      const { text, colour, top, left } = validatedResult.output;
 
       const span = document.createElement("span");
       span.className = "annotation-text";
@@ -113,19 +126,17 @@
       // so let's make not empty to fix.
       mount.innerHTML = "<span></span>";
 
-      const mountValue = getMountValue(mount);
-
-      const parsedResult = v.safeParse(
-        BoundingBoxSchema,
-        parseCoreHash(mountValue),
+      const validatedResult = v.safeParse(
+        BoundingBoxFromHash,
+        getMountValue(mount),
       );
 
-      if (!parsedResult.success) {
-        console.warn(parsedResult.issues);
+      if (!validatedResult.success) {
+        console.warn(validatedResult.issues);
         continue;
       }
 
-      const { topX, topY, bottomX, bottomY, colour } = parsedResult.output;
+      const { topX, topY, bottomX, bottomY, colour } = validatedResult.output;
 
       mount.style.setProperty(
         "--boundingbox-left",
