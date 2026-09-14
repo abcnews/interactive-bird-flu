@@ -1,10 +1,9 @@
 /// <reference types="svelte" />
 /// <reference types="vite/client" />
 
-declare module '*?raw' {
+declare module "*?raw" {
   const content: string;
   export default content;
 }
 
 declare module "@abcnews/aunty/vite";
-// declare module "base62str"
