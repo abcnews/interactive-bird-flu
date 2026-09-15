@@ -65,6 +65,8 @@
     BoundingBoxSchema,
   );
 
+  const modifiedMounts = new Map<HTMLElement, Record<string, string>>();
+
   $effect(() => {
     const frameEl = document.querySelector('[data-key="journey"]');
     frameEl?.classList.add("interactive-component-journey-frame");
@@ -93,14 +95,27 @@
       const { text, colour, top, left } = validatedResult.output;
 
       const span = document.createElement("span");
+
       span.className = "annotation-text";
       span.textContent = text;
       span.setAttribute("data-text", text);
       mount.replaceChildren(span);
 
-      mount.style.setProperty("--annotation-top", `${top}%`);
-      mount.style.setProperty("--annotation-left", `${left}%`);
-      mount.style.setProperty("--annotation-colour", colour);
+      // mount.style.setProperty("--annotation-top", `${top}%`);
+      // mount.style.setProperty("--annotation-left", `${left}%`);
+      // mount.style.setProperty("--annotation-colour", colour);
+
+      const annotationProperties = {
+        "--annotation-top": `${top}%`,
+        "--annotation-left": `${left}%`,
+        "--annotation-colour": colour,
+      };
+
+      for (const [key, value] of Object.entries(annotationProperties)) {
+        mount.style.setProperty(key, value);
+      }
+
+      modifiedMounts.set(mount, annotationProperties);
     }
 
     // Bounding box mounts
@@ -138,28 +153,21 @@
         borderRadius,
       } = validatedResult.output;
 
-      mount.style.setProperty(
-        "--boundingbox-left",
-        `${Math.min(topX, bottomX)}%`,
-      );
-      mount.style.setProperty(
-        "--boundingbox-top",
-        `${Math.min(topY, bottomY)}%`,
-      );
-      mount.style.setProperty(
-        "--boundingbox-width",
-        `${Math.abs(bottomX - topX)}%`,
-      );
-      mount.style.setProperty(
-        "--boundingbox-height",
-        `${Math.abs(bottomY - topY)}%`,
-      );
-      mount.style.setProperty("--boundingbox-colour", colour);
-      mount.style.setProperty("--boundingbox-stroke-width", `${strokeWidth}px`);
-      mount.style.setProperty(
-        "--boundingbox-border-radius",
-        `${borderRadius}px`,
-      );
+      const boundingBoxProperties = {
+        "--boundingbox-left": `${Math.min(topX, bottomX)}%`,
+        "--boundingbox-top": `${Math.min(topY, bottomY)}%`,
+        "--boundingbox-width": `${Math.abs(bottomX - topX)}%`,
+        "--boundingbox-height": `${Math.abs(bottomY - topY)}%`,
+        "--boundingbox-colour": colour,
+        "--boundingbox-stroke-width": `${strokeWidth}px`,
+        "--boundingbox-border-radius": `${borderRadius}px`,
+      };
+
+      for (const [key, value] of Object.entries(boundingBoxProperties)) {
+        mount.style.setProperty(key, value);
+      }
+
+      modifiedMounts.set(mount, boundingBoxProperties);
     }
 
     // Cleanup function (put everything back how we found it)
@@ -169,24 +177,19 @@
 
       for (const mount of annotationMounts) {
         mount.classList.remove("interactive-annotation-mount");
-        mount.style.removeProperty("--annotation-top");
-        mount.style.removeProperty("--annotation-left");
-        mount.style.removeProperty("--annotation-colour");
         mount.innerHTML = "";
       }
 
       for (const mount of boundingBoxMounts) {
         mount.classList.remove("interactive-boundingbox-mount");
-
         mount.innerHTML = "";
+      }
 
-        mount.style.removeProperty("--boundingbox-top");
-        mount.style.removeProperty("--boundingbox-left");
-        mount.style.removeProperty("--boundingbox-width");
-        mount.style.removeProperty("--boundingbox-height");
-        mount.style.removeProperty("--boundingbox-colour");
-        mount.style.removeProperty("--boundingbox-stroke-width");
-        mount.style.removeProperty("--boundingbox-border-radius");
+      // Loop through and remove CSS vars from mounts
+      for (const [mount, props] of modifiedMounts) {
+        for (const key of Object.keys(props)) {
+          mount.style.removeProperty(key);
+        }
       }
     };
   });
