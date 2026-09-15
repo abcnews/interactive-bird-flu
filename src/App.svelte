@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Portal from "svelte-portal";
   import Frame from "./components/Frame.svelte";
 </script>
 
@@ -10,4 +9,9 @@
 </main>
 
 <style lang="scss">
+  :global {
+    main {
+      overflow-x: clip;
+    }
+  }
 </style>

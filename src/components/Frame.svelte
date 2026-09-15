@@ -4,6 +4,7 @@
   import { getMountValue, selectMounts } from "@abcnews/mount-utils";
   import tinycolor from "tinycolor2";
   import * as v from "@valibot/valibot";
+  import { onMount } from "svelte";
 
   const base62 = Base62Str.createInstance();
 
@@ -67,7 +68,7 @@
 
   const modifiedMounts = new Map<HTMLElement, Record<string, string>>();
 
-  $effect(() => {
+  const init = () => {
     const frameEl = document.querySelector('[data-key="journey"]');
     frameEl?.classList.add("interactive-component-journey-frame");
     frameEl?.classList.add("u-full");
@@ -100,10 +101,6 @@
       span.textContent = text;
       span.setAttribute("data-text", text);
       mount.replaceChildren(span);
-
-      // mount.style.setProperty("--annotation-top", `${top}%`);
-      // mount.style.setProperty("--annotation-left", `${left}%`);
-      // mount.style.setProperty("--annotation-colour", colour);
 
       const annotationProperties = {
         "--annotation-top": `${top}%`,
@@ -171,7 +168,7 @@
     }
 
     // Cleanup function (put everything back how we found it)
-    return () => {
+    const cleanup = () => {
       frameEl?.classList.remove("interactive-component-journey-frame");
       frameEl?.classList.remove("u-full");
 
@@ -192,7 +189,11 @@
         }
       }
     };
-  });
+
+    return cleanup;
+  };
+
+  onMount(init);
 </script>
 
 <style lang="scss">
@@ -203,6 +204,16 @@
       figure[data-component="Figure"] {
         max-width: 100%;
         margin-inline: 0;
+      }
+
+      // Shared styles only. Separate styles further below.
+      .interactive-annotation-mount,
+      .interactive-boundingbox-mount {
+        transition: opacity 600ms ease;
+
+        &.is-hidden {
+          opacity: 0;
+        }
       }
 
       .interactive-annotation-mount {
@@ -230,7 +241,7 @@
           position: absolute;
           top: 0;
           left: 0;
-          -webkit-text-stroke: 2px hsl(0deg, 0%, 98%);
+          -webkit-text-stroke: 2px hsl(0deg, 0%, 100%);
           z-index: -1;
         }
       }
