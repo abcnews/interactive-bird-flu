@@ -13,7 +13,7 @@
     boundingBox: {
       colour: "aqua",
       strokeWidth: 2,
-      borderRadius: 6,
+      borderRadius: 4,
       fillColour: "transparent",
     },
   } as const;
@@ -28,7 +28,7 @@
   const Colour = v.pipe(
     v.string(),
     v.check((s) => tinycolor(s).isValid(), "Not a recognised colour"),
-    v.transform((s) => tinycolor(s).toHexString()),
+    v.transform((s) => tinycolor(s).toHex8String()),
   );
 
   /** Base62 output can be all digits, so `coerce` may hand us a number. */
@@ -63,6 +63,7 @@
       DEFAULTS.boundingBox.strokeWidth,
     ),
     borderRadius: v.optional(v.number(), DEFAULTS.boundingBox.borderRadius),
+    fillColour: v.optional(Colour, DEFAULTS.boundingBox.fillColour),
   });
 
   const BoundingBoxFromHash = v.pipe(
@@ -131,13 +132,13 @@
     });
 
     for (const mount of boundingBoxMounts) {
-      const validatedResult = v.safeParse(
+      const validatedBoundingBoxConfig = v.safeParse(
         BoundingBoxFromHash,
         getMountValue(mount),
       );
 
-      if (!validatedResult.success) {
-        console.warn(validatedResult.issues);
+      if (!validatedBoundingBoxConfig.success) {
+        console.warn(validatedBoundingBoxConfig.issues);
         continue; // Go to next mount
       }
 
@@ -156,7 +157,8 @@
         colour,
         strokeWidth,
         borderRadius,
-      } = validatedResult.output;
+        fillColour,
+      } = validatedBoundingBoxConfig.output;
 
       const boundingBoxProperties = {
         "--boundingbox-left": `${Math.min(topX, bottomX)}%`,
@@ -166,6 +168,7 @@
         "--boundingbox-colour": colour,
         "--boundingbox-stroke-width": `${strokeWidth}px`,
         "--boundingbox-border-radius": `${borderRadius}px`,
+        "--boundingbox-fill-colour": fillColour,
       };
 
       for (const [key, value] of Object.entries(boundingBoxProperties)) {
@@ -263,6 +266,7 @@
         border-width: var(--boundingbox-stroke-width);
         border-color: var(--boundingbox-colour);
         border-radius: var(--boundingbox-border-radius);
+        background-color: var(--boundingbox-fill-colour);
         border-style: solid;
         box-sizing: border-box;
         pointer-events: none;
