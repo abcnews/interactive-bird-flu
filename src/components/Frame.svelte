@@ -214,24 +214,17 @@
       frameEl?.classList.remove("interactive-component-journey-frame");
       frameEl?.classList.remove("u-full");
 
-      for (const mount of annotationMounts) {
-        mount.classList.remove("interactive-annotation-mount");
-        mount.classList.remove("is-hidden");
-        mount.innerHTML = "";
-      }
-
-      for (const mount of boundingBoxMounts) {
-        mount.classList.remove("interactive-boundingbox-mount");
-        mount.classList.remove("is-hidden");
-        mount.innerHTML = "";
-      }
-
-      // Loop through and remove CSS vars from mounts
-      for (const [mount, props] of modifiedMounts) {
-        for (const key of Object.keys(props)) {
+      for (const [mount, mod] of modifiedMounts) {
+        mod.viewport?.observer.stop(); // Disconnect observer
+        mount.classList.remove(mod.className, "is-hidden");
+        for (const key of Object.keys(mod.properties)) {
           mount.style.removeProperty(key);
         }
+        mount.innerHTML = "";
       }
+
+      // Empty internal mount tracker
+      modifiedMounts.clear();
     };
 
     return cleanup;
