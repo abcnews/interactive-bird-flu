@@ -10,7 +10,7 @@
 
 <style lang="scss">
   :global {
-    main {
+    body {
       overflow-x: clip;
     }
   }

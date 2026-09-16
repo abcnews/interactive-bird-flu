@@ -9,8 +9,13 @@
   const base62 = Base62Str.createInstance();
 
   const DEFAULTS = {
-    annotation: { colour: "#DB7093", top: 50, left: 50 },
-    boundingBox: { colour: "aqua", strokeWidth: 2, borderRadius: 6 },
+    annotation: { colour: "black", strokeColour: "white", top: 50, left: 50 },
+    boundingBox: {
+      colour: "aqua",
+      strokeWidth: 2,
+      borderRadius: 6,
+      fillColour: "transparent",
+    },
   } as const;
 
   // Valibot schemas
@@ -35,6 +40,7 @@
   const AnnotationSchema = v.object({
     text: Base62Text,
     colour: v.optional(Colour, DEFAULTS.annotation.colour),
+    strokeColour: v.optional(Colour, DEFAULTS.annotation.strokeColour),
     top: v.optional(Percent, DEFAULTS.annotation.top),
     left: v.optional(Percent, DEFAULTS.annotation.left),
   });
@@ -81,19 +87,20 @@
     });
 
     for (const mount of annotationMounts) {
-      const validatedResult = v.safeParse(
+      const validatedAnnotationConfig = v.safeParse(
         AnnotationFromHash,
         getMountValue(mount),
       );
 
-      if (!validatedResult.success) {
-        console.warn(validatedResult.issues);
+      if (!validatedAnnotationConfig.success) {
+        console.warn(validatedAnnotationConfig.issues);
         continue; // Go to next mount
       }
 
       mount.classList.add("interactive-annotation-mount");
 
-      const { text, colour, top, left } = validatedResult.output;
+      const { text, colour, top, left, strokeColour } =
+        validatedAnnotationConfig.output;
 
       const span = document.createElement("span");
 
@@ -106,6 +113,7 @@
         "--annotation-top": `${top}%`,
         "--annotation-left": `${left}%`,
         "--annotation-colour": colour,
+        "--annotation-stroke-colour": strokeColour,
       };
 
       for (const [key, value] of Object.entries(annotationProperties)) {
@@ -241,7 +249,7 @@
           position: absolute;
           top: 0;
           left: 0;
-          -webkit-text-stroke: 2px hsl(0deg, 0%, 100%);
+          -webkit-text-stroke: 2px var(--annotation-stroke-colour);
           z-index: -1;
         }
       }
