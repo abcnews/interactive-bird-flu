@@ -33,6 +33,7 @@
     "@valibot/valibot": "npm:@jsr/valibot__valibot@^1.5.0",
     "base62str": "^2.0.0",
     "effect": "4.0.0-rc.115",
+    "runed": "^0.37.1",
     "svelte-portal": "^2.2.1",
     "tinycolor2": "^1.6.0"
   },

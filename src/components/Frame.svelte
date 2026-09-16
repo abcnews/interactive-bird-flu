@@ -5,6 +5,7 @@
   import tinycolor from "tinycolor2";
   import * as v from "@valibot/valibot";
   import { onMount } from "svelte";
+  import { IsInViewport } from "runed";
 
   const base62 = Base62Str.createInstance();
 
@@ -28,7 +29,7 @@
   const Colour = v.pipe(
     v.string(),
     v.check((s) => tinycolor(s).isValid(), "Not a recognised colour"),
-    v.transform((s) => tinycolor(s).toHex8String()),
+    v.transform((s) => tinycolor(s).toRgbString()),
   );
 
   /** Base62 output can be all digits, so `coerce` may hand us a number. */
@@ -73,7 +74,13 @@
     BoundingBoxSchema,
   );
 
-  const modifiedMounts = new Map<HTMLElement, Record<string, string>>();
+  type Modification = {
+    className: string;
+    properties: Record<string, string>;
+    viewport?: IsInViewport;
+  };
+
+  const modifiedMounts = new Map<HTMLElement, Modification>();
 
   const init = () => {
     const frameEl = document.querySelector('[data-key="journey"]');
@@ -98,7 +105,9 @@
         continue; // Go to next mount
       }
 
-      mount.classList.add("interactive-annotation-mount");
+      const CLASS_TO_ADD = "interactive-annotation-mount";
+
+      mount.classList.add(CLASS_TO_ADD);
 
       const { text, colour, top, left, strokeColour } =
         validatedAnnotationConfig.output;
@@ -121,7 +130,17 @@
         mount.style.setProperty(key, value);
       }
 
-      modifiedMounts.set(mount, annotationProperties);
+      const inViewport = new IsInViewport(() => mount);
+
+      modifiedMounts.set(mount, {
+        className: CLASS_TO_ADD,
+        properties: annotationProperties,
+        viewport: inViewport,
+      });
+
+      $effect(() => {
+        mount.classList.toggle("is-hidden", !inViewport.current);
+      });
     }
 
     // Bounding box mounts
@@ -141,6 +160,8 @@
         console.warn(validatedBoundingBoxConfig.issues);
         continue; // Go to next mount
       }
+
+      const CLASS_TO_ADD = "interactive-boundingbox-mount";
 
       mount.classList.add("interactive-boundingbox-mount");
 
@@ -175,7 +196,17 @@
         mount.style.setProperty(key, value);
       }
 
-      modifiedMounts.set(mount, boundingBoxProperties);
+      const inViewport = new IsInViewport(() => mount);
+
+      modifiedMounts.set(mount, {
+        className: CLASS_TO_ADD,
+        properties: boundingBoxProperties,
+        viewport: inViewport,
+      });
+
+      $effect(() => {
+        mount.classList.toggle("is-hidden", !inViewport.current);
+      });
     }
 
     // Cleanup function (put everything back how we found it)
@@ -185,11 +216,13 @@
 
       for (const mount of annotationMounts) {
         mount.classList.remove("interactive-annotation-mount");
+        mount.classList.remove("is-hidden");
         mount.innerHTML = "";
       }
 
       for (const mount of boundingBoxMounts) {
         mount.classList.remove("interactive-boundingbox-mount");
+        mount.classList.remove("is-hidden");
         mount.innerHTML = "";
       }
 
@@ -220,7 +253,7 @@
       // Shared styles only. Separate styles further below.
       .interactive-annotation-mount,
       .interactive-boundingbox-mount {
-        transition: opacity 600ms ease;
+        transition: opacity 2s ease;
 
         &.is-hidden {
           opacity: 0;
