@@ -77,7 +77,7 @@
   type Modification = {
     className: string;
     properties: Record<string, string>;
-    viewport?: IsInViewport;
+    viewport: IsInViewport;
   };
 
   const modifiedMounts = new Map<HTMLElement, Modification>();
@@ -163,7 +163,7 @@
 
       const CLASS_TO_ADD = "interactive-boundingbox-mount";
 
-      mount.classList.add("interactive-boundingbox-mount");
+      mount.classList.add(CLASS_TO_ADD);
 
       // The DLS global styles shift `div[id]:empty` and `a:not([href])[id]:empty`
       // up by 2.7rem below 543px, which overrides our absolute positioning.
@@ -215,7 +215,7 @@
       frameEl?.classList.remove("u-full");
 
       for (const [mount, mod] of modifiedMounts) {
-        mod.viewport?.observer.stop(); // Disconnect observer
+        mod.viewport.observer.stop(); // Disconnect observer
         mount.classList.remove(mod.className, "is-hidden");
         for (const key of Object.keys(mod.properties)) {
           mount.style.removeProperty(key);
