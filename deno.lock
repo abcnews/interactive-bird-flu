@@ -1,7 +1,6 @@
 {
   "version": "5",
   "specifiers": {
-    "npm:@abcnews/alternating-case-to-object@^3.2.0": "3.2.0",
     "npm:@abcnews/aunty@^17.0.0-next.7": "17.0.0-next.9",
     "npm:@abcnews/env-utils@6": "6.1.0",
     "npm:@abcnews/mount-utils@^3.0.1": "3.0.1",
@@ -25,12 +24,6 @@
     "npm:vite@^8.0.1": "8.2.2_@types+node@24.13.3_sass-embedded@1.104.0"
   },
   "npm": {
-    "@abcnews/alternating-case-to-object@3.2.0": {
-      "integrity": "sha512-oJm6s2C4nK/ksogWaHAqnDjHb+oJu6Qu44XzamZCbJiGBllmI2gUzoVKvTFBVDTbGdVkUcLnLYYIix+ZOLVl6w==",
-      "dependencies": [
-        "tslib"
-      ]
-    },
     "@abcnews/aunty@17.0.0-next.9": {
       "integrity": "sha512-XOswr3+2qR3YYKPy2t81jx6fc4Ii4iZgdEvklASOkXtiuNopKXFW8TFpLXmkaHRajGZGo7ohICOJUV+hfm2+iw==",
       "dependencies": [
@@ -1051,7 +1044,6 @@
   "workspace": {
     "packageJson": {
       "dependencies": [
-        "npm:@abcnews/alternating-case-to-object@^3.2.0",
         "npm:@abcnews/aunty@^17.0.0-next.7",
         "npm:@abcnews/env-utils@6",
         "npm:@abcnews/mount-utils@^3.0.1",

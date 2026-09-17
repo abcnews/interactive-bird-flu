@@ -19,6 +19,8 @@
     },
   } as const;
 
+  const IN_VIEWPORT_CONFIG = { rootMargin: "-12% 0px" } as const;
+
   // Valibot schemas
   // ---------------
 
@@ -130,7 +132,7 @@
         mount.style.setProperty(key, value);
       }
 
-      const inViewport = new IsInViewport(() => mount);
+      const inViewport = new IsInViewport(() => mount, IN_VIEWPORT_CONFIG);
 
       modifiedMounts.set(mount, {
         className: CLASS_TO_ADD,
@@ -196,7 +198,7 @@
         mount.style.setProperty(key, value);
       }
 
-      const inViewport = new IsInViewport(() => mount);
+      const inViewport = new IsInViewport(() => mount, IN_VIEWPORT_CONFIG);
 
       modifiedMounts.set(mount, {
         className: CLASS_TO_ADD,
@@ -246,7 +248,7 @@
       // Shared styles only. Separate styles further below.
       .interactive-annotation-mount,
       .interactive-boundingbox-mount {
-        transition: opacity 2s ease;
+        transition: opacity 750ms ease;
 
         &.is-hidden {
           opacity: 0;
@@ -267,6 +269,7 @@
         max-width: 8em;
         -webkit-text-fill-color: var(--annotation-colour);
         -webkit-text-stroke: 2px transparent;
+        // text-shadow: var(--annotation-stroke-colour) 0 0 37px;
 
         .annotation-text {
           position: relative;

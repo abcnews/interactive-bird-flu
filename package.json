@@ -25,7 +25,6 @@
     "vite": "^8.0.1"
   },
   "dependencies": {
-    "@abcnews/alternating-case-to-object": "^3.2.0",
     "@abcnews/core-hash-converter": "npm:@jsr/abcnews__core-hash-converter@^0.2.1",
     "@abcnews/env-utils": "^6.0.0",
     "@abcnews/mount-utils": "^3.0.1",
