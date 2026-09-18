@@ -6,6 +6,9 @@
   import * as v from "@valibot/valibot";
   import { onMount } from "svelte";
   import { IsInViewport } from "runed";
+  import Portal from "svelte-portal";
+
+  import Overlay from "./Overlay.svelte";
 
   const base62 = Base62Str.createInstance();
 
@@ -234,6 +237,10 @@
 
   onMount(init);
 </script>
+
+<Portal target=".interactive-component-journey-frame">
+  <Overlay />
+</Portal>
 
 <style lang="scss">
   :global {

@@ -3,7 +3,7 @@
 </script>
 
 <main>
-  <div class="container">
+  <div class="interactive-container">
     <Frame />
   </div>
 </main>
