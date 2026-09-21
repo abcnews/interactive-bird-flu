@@ -5,8 +5,10 @@
   import tinycolor from "tinycolor2";
   import * as v from "@valibot/valibot";
   import { onMount } from "svelte";
-  import { IsInViewport } from "runed";
+  import { IsInViewport, watch } from "runed";
   import Portal from "svelte-portal";
+
+  let { scrollY } = $props();
 
   import Overlay from "./Overlay.svelte";
 
@@ -87,10 +89,22 @@
 
   const modifiedMounts = new Map<HTMLElement, Modification>();
 
+  const sleep = async (ms: number) => {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  };
+
   const init = () => {
     const frameEl = document.querySelector('[data-key="journey"]');
     frameEl?.classList.add("interactive-component-journey-frame");
     frameEl?.classList.add("u-full");
+
+    // Add the overlay scrim before annotations and bounding boxes in the DOM
+    const figureEl = frameEl?.querySelector('figure[data-component="Figure"]');
+    // const overlay = overlayEl;
+    // if (overlay) figureEl?.after(overlay);
+    const overlayHost = document.createElement("div");
+    overlayHost.id = "interactive-overlay-host";
+    figureEl?.after(overlayHost);
 
     // Annotation text mounts
     // ----------------------
@@ -216,6 +230,8 @@
 
     // Cleanup function (put everything back how we found it)
     const cleanup = () => {
+      overlayHost?.remove();
+
       frameEl?.classList.remove("interactive-component-journey-frame");
       frameEl?.classList.remove("u-full");
 
@@ -235,11 +251,27 @@
     return cleanup;
   };
 
-  onMount(init);
+  onMount(() => {
+    const cleanup = init();
+    return cleanup;
+  });
+
+  let activeOutlines = $state<string[]>([]);
+
+  watch(
+    () => scrollY,
+    () => {
+      if (scrollY > 150 && scrollY < 550) {
+        activeOutlines.push("wildbirds");
+      } else {
+        activeOutlines = [];
+      }
+    },
+  );
 </script>
 
-<Portal target=".interactive-component-journey-frame">
-  <Overlay />
+<Portal target={"#interactive-overlay-host"}>
+  <Overlay {activeOutlines} />
 </Portal>
 
 <style lang="scss">

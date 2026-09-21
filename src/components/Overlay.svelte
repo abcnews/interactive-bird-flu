@@ -1,6 +1,30 @@
 <script lang="ts">
+  import { fade } from "svelte/transition";
+
+  const FADE_DURATION = 750;
+
+  type Outline = {
+    id: string;
+    d: string;
+  };
+
+  type Props = { activeOutlines?: string[] };
+
+  let { activeOutlines = [] }: Props = $props();
+
   const wildBirds =
     "M1400.18,794.4s-16.04,27.49-27.49,45.82-33.6,44.29-43.53,56.51-8.4,17.57-19.09,31.31-35.13,42-64.91,68.73-36.66,32.08-61.86,64.15-42,72.55-49.64,96.23-9.93,44.29-9.93,44.29c0,0-95.46-55.75-133.65-81.72s-97.75-64.91-100.81-66.44-143.58-36.66-168.78-42-122.19-10.69-146.63-16.04-43.53-1.53-61.1-1.53-28.26-6.11-48.11-6.11-19.86,2.29-30.55,3.05-17.57-3.05-13.75,1.53,36.66,16.8,46.59,22.15,35.89,9.16,47.35,16.04,12.22,9.16,22.91,10.69,13.75-3.05,20.62,2.29,24.44,10.69,35.13,13.75,19.86.76,19.86.76c0,0,24.44,6.11,35.13,6.11s22.91-3.05,31.31.76,19.86,0,25.2,3.82,11.46,9.93,19.09,10.69,19.86-.76,21.38,2.29,29.78,26.73,48.11,35.89,15.27,11.46,36.66,22.15,38.95,25.97,47.35,32.08,29.78,20.62,45.06,29.78,30.55,12.98,34.37,19.86,3.82,13.75,10.69,18.33,5.35-.76,10.69,9.93,12.98,10.69,14.51,12.98,6.87,4.58,9.16,9.16,8.4.76,7.64,6.11,7.64,10.69,7.64,10.69c0,0-41.24,29.02-48.88,33.6s-29.02,15.27-44.29,19.86-34.37,8.4-47.35,12.98-23.67,7.64-23.67,9.93v10.69c0,.76-1.53,5.35,1.53,6.11s16.8-1.53,16.8-1.53c0,0-8.4,2.29-6.87,6.87s5.35,7.64,17.57,6.87,36.66-5.35,45.82-6.87,29.02-1.53,34.37-3.05,22.91-6.11,35.13-6.87,51.93.76,69.5-1.53,64.91-8.4,77.9-11.46,19.86-5.35,23.67-6.11,22.91-1.53,42.77-8.4,32.84-12.22,51.93-19.09,25.2-8.4,33.6-11.46,12.98-8.4,25.97-13.75,28.26-7.64,29.78-7.64,18.33-2.29,18.33-2.29c0,0,35.13,16.04,44.29,18.33s20.62,3.82,22.91,9.16,9.93,8.4,9.93,8.4c0,0,12.98-10.69,3.05-25.2s-32.84-18.33-38.18-23.67-29.02-26.73-32.84-35.89c0,0,8.4-8.4-5.35-21.38s-18.33-13.75-33.6-19.09-51.17-12.22-62.62-12.22c0,0-3.82-47.35,11.46-82.48s41.24-71.79,50.4-82.48,28.26-38.18,42.77-51.17,32.08-24.44,43.53-42,29.78-56.51,23.67-89.35-29.02-48.11-35.89-49.64-13.75-2.29-13.75-2.29Z";
+
+  const outlines: Outline[] = [
+    {
+      id: "wildbirds",
+      d: wildBirds,
+    },
+  ];
+
+  const active = $derived(
+    outlines.filter((o) => activeOutlines.includes(o.id)),
+  );
 </script>
 
 <svg
@@ -8,26 +32,33 @@
   data-name="Layer 1"
   xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 4000 13578"
+  class:is-active={active.length > 0}
+  style:--fade-duration={`${FADE_DURATION}ms`}
 >
   <defs>
     <path id="wild-birds" class="cls-1" d={wildBirds} />
     <mask id="spotlight-holes">
       <rect width="100%" height="100%" fill="white" />
-      <path fill="black" d={wildBirds} />
+      {#each active as outline (outline.id)}
+        <path d={outline.d} fill="black" transition:fade={{ duration: 1750 }} />
+      {/each}
     </mask>
   </defs>
 
   <!-- The darkening layer, with the shape cut out of it -->
   <rect width="100%" height="100%" class="scrim" mask="url(#spotlight-holes)" />
 
-  <!-- The visible outline -->
-  <path
-      d={wildBirds}
+  <!-- The visible outlines -->
+  {#each active as outline (outline.id)}
+    <path
+      d={outline.d}
       fill="none"
-      stroke="red"
-      stroke-width="5"
+      stroke="MediumSpringGreen"
+      stroke-width={5}
       stroke-miterlimit="10"
+      transition:fade={{ duration: FADE_DURATION }}
     />
+  {/each}
 </svg>
 
 <style>
@@ -37,14 +68,13 @@
     width: 100%;
     height: 100%;
     pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--fade-duration) ease;
+  }
+  svg.is-active {
+    opacity: 1;
   }
   .scrim {
-    fill: rgb(0 0 0 / 0.8);
-  }
-  .outline {
-    fill: none;
-    stroke: red;
-    stroke-width: 10;
-    stroke-miterlimit: 10;
+    fill: rgb(0 0 0 / 0.6);
   }
 </style>
