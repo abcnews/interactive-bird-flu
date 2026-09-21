@@ -1,7 +1,7 @@
 <script lang="ts">
   import { fade } from "svelte/transition";
 
-  const FADE_DURATION = 750;
+  const FADE_DURATION = 1000;
 
   type Outline = {
     id: string;
@@ -40,7 +40,7 @@
     <mask id="spotlight-holes">
       <rect width="100%" height="100%" fill="white" />
       {#each active as outline (outline.id)}
-        <path d={outline.d} fill="black" transition:fade={{ duration: 1750 }} />
+        <path d={outline.d} fill="black" out:fade={{ duration: FADE_DURATION }} />
       {/each}
     </mask>
   </defs>
@@ -56,7 +56,7 @@
       stroke="MediumSpringGreen"
       stroke-width={5}
       stroke-miterlimit="10"
-      transition:fade={{ duration: FADE_DURATION }}
+      out:fade={{ duration: FADE_DURATION }}
     />
   {/each}
 </svg>
