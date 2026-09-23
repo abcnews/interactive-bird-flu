@@ -15,7 +15,14 @@
   const base62 = Base62Str.createInstance();
 
   const DEFAULTS = {
-    annotation: { colour: "black", strokeColour: "white", top: 50, left: 50 },
+    annotation: {
+      colour: "black",
+      outlineColour: "white",
+      top: 50,
+      left: 50,
+      anchor: "left",
+      width: 10,
+    },
     boundingBox: {
       colour: "aqua",
       strokeWidth: 2,
@@ -48,9 +55,14 @@
   const AnnotationSchema = v.object({
     text: Base62Text,
     colour: v.optional(Colour, DEFAULTS.annotation.colour),
-    strokeColour: v.optional(Colour, DEFAULTS.annotation.strokeColour),
+    outlineColour: v.optional(Colour, DEFAULTS.annotation.outlineColour),
     top: v.optional(Percent, DEFAULTS.annotation.top),
     left: v.optional(Percent, DEFAULTS.annotation.left),
+    anchor: v.optional(
+      v.picklist(["left", "right"]),
+      DEFAULTS.annotation.anchor,
+    ),
+    width: v.optional(v.number(), DEFAULTS.annotation.width),
   });
 
   const AnnotationFromHash = v.pipe(
@@ -128,7 +140,7 @@
 
       mount.classList.add(CLASS_TO_ADD);
 
-      const { text, colour, top, left, strokeColour } =
+      const { text, colour, top, left, outlineColour, anchor, width } =
         validatedAnnotationConfig.output;
 
       const span = document.createElement("span");
@@ -140,9 +152,11 @@
 
       const annotationProperties = {
         "--annotation-top": `${top}%`,
-        "--annotation-left": `${left}%`,
+        "--annotation-left": anchor === "left" ? `${left}%` : "auto",
+        "--annotation-right": anchor === "right" ? `${100 - left}%` : "auto",
         "--annotation-colour": colour,
-        "--annotation-stroke-colour": strokeColour,
+        "--annotation-outline-colour": outlineColour,
+        "--annotation-width": `${width}em`,
       };
 
       for (const [key, value] of Object.entries(annotationProperties)) {
@@ -255,26 +269,15 @@
     const cleanup = init();
     return cleanup;
   });
-
-  let activeOutlines = $state<string[]>([]);
-
-  watch(
-    () => scrollY,
-    () => {
-      if (scrollY > 150 && scrollY < 550) {
-        activeOutlines.push("wildbirds");
-      } else {
-        activeOutlines = [];
-      }
-    },
-  );
 </script>
 
 <Portal target={"#interactive-overlay-host"}>
-  <Overlay {activeOutlines} />
+  <Overlay />
 </Portal>
 
 <style lang="scss">
+  @use "../styles/breakpoints.scss" as *;
+
   :global {
     .interactive-component-journey-frame {
       position: relative;
@@ -295,20 +298,37 @@
       }
 
       .interactive-annotation-mount {
-        font-size: 22px;
         line-height: 1em;
         position: absolute;
         text-align: center;
         font-weight: 700;
-        letter-spacing: 1.4px;
+        letter-spacing: 0.06em;
         color: var(--annotation-colour);
         top: var(--annotation-top);
-        left: var(--annotation-left);
-        transform: translate(-50%, -50%);
-        max-width: 8em;
+        left: var(--annotation-left, auto);
+        right: var(--annotation-right, auto);
         -webkit-text-fill-color: var(--annotation-colour);
         -webkit-text-stroke: 2px transparent;
-        // text-shadow: var(--annotation-stroke-colour) 0 0 37px;
+        max-width: var(--annotation-width);
+        isolation: isolate;
+
+        font-size: 0.875rem; // 14px
+
+        @include for-size(tablet-portrait-up) {
+          font-size: 1.125rem; // 18px
+        }
+
+        @include for-size(tablet-landscape-up) {
+          font-size: 1.375rem; // 22px
+        }
+
+        @include for-size(desktop-up) {
+          font-size: 1.625rem; // 26px
+        }
+
+        @include for-size(big-desktop-up) {
+          font-size: 1.75rem; // 28px
+        }
 
         .annotation-text {
           position: relative;
@@ -320,7 +340,7 @@
           position: absolute;
           top: 0;
           left: 0;
-          -webkit-text-stroke: 2px var(--annotation-stroke-colour);
+          -webkit-text-stroke: 2px var(--annotation-outline-colour);
           z-index: -1;
         }
       }
