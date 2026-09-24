@@ -33,6 +33,8 @@
 
   const IN_VIEWPORT_CONFIG = { rootMargin: "-12% 0px" } as const;
 
+  const UNNAMED_MOUNT_NAME = "nonamespecified";
+
   // Valibot schemas
   // ---------------
 
@@ -63,6 +65,7 @@
       DEFAULTS.annotation.anchor,
     ),
     width: v.optional(v.number(), DEFAULTS.annotation.width),
+    name: v.optional(v.string()),
   });
 
   const AnnotationFromHash = v.pipe(
@@ -84,6 +87,7 @@
     ),
     borderRadius: v.optional(v.number(), DEFAULTS.boundingBox.borderRadius),
     fillColour: v.optional(Colour, DEFAULTS.boundingBox.fillColour),
+    name: v.optional(v.string()),
   });
 
   const BoundingBoxFromHash = v.pipe(
@@ -140,7 +144,7 @@
 
       mount.classList.add(CLASS_TO_ADD);
 
-      const { text, colour, top, left, outlineColour, anchor, width } =
+      const { text, colour, top, left, outlineColour, anchor, width, name } =
         validatedAnnotationConfig.output;
 
       const span = document.createElement("span");
@@ -158,6 +162,11 @@
         "--annotation-outline-colour": outlineColour,
         "--annotation-width": `${width}em`,
       };
+
+      mount.setAttribute(
+        "data-name",
+        typeof name === "undefined" ? UNNAMED_MOUNT_NAME : name,
+      );
 
       for (const [key, value] of Object.entries(annotationProperties)) {
         mount.style.setProperty(key, value);
@@ -212,6 +221,7 @@
         strokeWidth,
         borderRadius,
         fillColour,
+        name,
       } = validatedBoundingBoxConfig.output;
 
       const boundingBoxProperties = {
@@ -236,6 +246,11 @@
         properties: boundingBoxProperties,
         viewport: inViewport,
       });
+
+      mount.setAttribute(
+        "data-name",
+        typeof name === "undefined" ? UNNAMED_MOUNT_NAME : name,
+      );
 
       $effect(() => {
         mount.classList.toggle("is-hidden", !inViewport.current);
@@ -272,7 +287,7 @@
 </script>
 
 <Portal target={"#interactive-overlay-host"}>
-  <Overlay />
+  <Overlay activeOutlines={["dolphins", "seagull"]} />
 </Portal>
 
 <style lang="scss">
@@ -311,6 +326,7 @@
         -webkit-text-stroke: 2px transparent;
         max-width: var(--annotation-width);
         isolation: isolate;
+        transform: translateY(-50%);
 
         font-size: 0.875rem; // 14px
 
