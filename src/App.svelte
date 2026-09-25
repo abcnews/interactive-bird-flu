@@ -1,16 +1,12 @@
 <script lang="ts">
   import Frame from "./components/Frame.svelte";
-
-  let scrollY = $state<number>();
 </script>
 
 <main>
   <div class="interactive-container">
-    <Frame {scrollY} />
+    <Frame />
   </div>
 </main>
-
-<svelte:window bind:scrollY />
 
 <style lang="scss">
   :global {

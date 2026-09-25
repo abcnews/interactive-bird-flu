@@ -8,13 +8,7 @@
 
   import { AnnotationFromHash, BoundingBoxFromHash } from "../schemas.ts";
 
-  let { scrollY } = $props();
-
   import Overlay from "./Overlay.svelte";
-
-  const IN_VIEWPORT_CONFIG = { rootMargin: "-12% 0px" } as const;
-
-  const UNNAMED_MOUNT_NAME = "nonamespecified";
 
   type Modification = {
     className: string;
@@ -63,8 +57,17 @@
 
       mount.classList.add(CLASS_TO_ADD);
 
-      const { text, colour, top, left, outlineColour, anchor, width, name } =
-        validatedAnnotationConfig.output;
+      const {
+        text,
+        colour,
+        top,
+        left,
+        outlineColour,
+        anchor,
+        width,
+        name,
+        inset,
+      } = validatedAnnotationConfig.output;
 
       const span = document.createElement("span");
 
@@ -82,16 +85,15 @@
         "--annotation-width": `${width}em`,
       };
 
-      mount.setAttribute(
-        "data-name",
-        typeof name === "undefined" ? UNNAMED_MOUNT_NAME : name,
-      );
+      mount.setAttribute("data-name", name);
 
       for (const [key, value] of Object.entries(annotationProperties)) {
         mount.style.setProperty(key, value);
       }
 
-      const inViewport = new IsInViewport(() => mount, IN_VIEWPORT_CONFIG);
+      const inViewport = new IsInViewport(() => mount, {
+        rootMargin: `-${inset}% 0px`,
+      });
 
       modifiedMounts.set(mount, {
         className: CLASS_TO_ADD,
@@ -141,6 +143,7 @@
         borderRadius,
         fillColour,
         name,
+        inset,
       } = validatedBoundingBoxConfig.output;
 
       const boundingBoxProperties = {
@@ -158,7 +161,9 @@
         mount.style.setProperty(key, value);
       }
 
-      const inViewport = new IsInViewport(() => mount, IN_VIEWPORT_CONFIG);
+      const inViewport = new IsInViewport(() => mount, {
+        rootMargin: `-${inset}% 0px`,
+      });
 
       modifiedMounts.set(mount, {
         className: CLASS_TO_ADD,
@@ -166,10 +171,7 @@
         viewport: inViewport,
       });
 
-      mount.setAttribute(
-        "data-name",
-        typeof name === "undefined" ? UNNAMED_MOUNT_NAME : name,
-      );
+      mount.setAttribute("data-name", name);
 
       $effect(() => {
         mount.classList.toggle("is-hidden", !inViewport.current);
@@ -206,7 +208,7 @@
 </script>
 
 <Portal target={"#interactive-overlay-host"}>
-  <Overlay activeOutlines={["dolphins", "seagull"]} />
+  <Overlay />
 </Portal>
 
 <style lang="scss">

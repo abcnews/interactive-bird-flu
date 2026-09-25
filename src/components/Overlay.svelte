@@ -9,6 +9,7 @@
   import Seagull from "./outlines/Seagull.svelte";
   import Dolphins from "./outlines/Dolphins.svelte";
   import Quoll from "./outlines/Quoll.svelte";
+  import Kangaroo from "./outlines/Kangaroo.svelte";
 
   import { OutlineTriggerFromHash } from "../schemas.ts";
 
@@ -27,6 +28,7 @@
     ["seagull", Seagull],
     ["dolphins", Dolphins],
     ["quoll", Quoll],
+    ["kangaroo", Kangaroo],
   ]);
 
   type Trigger = {
@@ -67,10 +69,10 @@
       // A child element stops the `:empty` selector matching. Don't remove.
       mount.innerHTML = "<span></span>";
 
-      const { name, colour, strokeWidth } = result.output;
+      const { name, colour, strokeWidth, inset } = result.output;
 
       const viewport = new IsInViewport(() => mount, {
-        rootMargin: `-${result.output.inset}% 0px`,
+        rootMargin: `-${inset}% 0px`,
       });
 
       return [{ name, colour, strokeWidth, component, viewport }];

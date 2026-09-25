@@ -4,6 +4,8 @@ import { parse as parseCoreHash } from "@abcnews/core-hash-converter";
 import Base62Str from "base62str";
 const base62 = Base62Str.createInstance();
 
+const UNNAMED_MOUNT_NAME = "nonamespecified";
+
 export const DEFAULTS = {
   annotation: {
     colour: "black",
@@ -40,6 +42,9 @@ const Base62Text = v.pipe(
   v.transform((s) => base62.decodeStr(s)),
 );
 
+/** How far in from the top and bottom of the screen before it fades. */
+const Inset = v.optional(v.pipe(v.number(), v.minValue(0), v.maxValue(49)), 12);
+
 const AnnotationSchema = v.object({
   text: Base62Text,
   colour: v.optional(Colour, DEFAULTS.annotation.colour),
@@ -48,7 +53,8 @@ const AnnotationSchema = v.object({
   left: v.optional(Percent, DEFAULTS.annotation.left),
   anchor: v.optional(v.picklist(["left", "right"]), DEFAULTS.annotation.anchor),
   width: v.optional(v.number(), DEFAULTS.annotation.width),
-  name: v.optional(v.string()),
+  name: v.optional(v.string(), UNNAMED_MOUNT_NAME),
+  inset: Inset,
 });
 
 export const AnnotationFromHash = v.pipe(
@@ -70,7 +76,8 @@ const BoundingBoxSchema = v.object({
   ),
   borderRadius: v.optional(v.number(), DEFAULTS.boundingBox.borderRadius),
   fillColour: v.optional(Colour, DEFAULTS.boundingBox.fillColour),
-  name: v.optional(v.string()),
+  name: v.optional(v.string(), UNNAMED_MOUNT_NAME),
+  inset: Inset,
 });
 
 export const BoundingBoxFromHash = v.pipe(
@@ -85,7 +92,7 @@ export const OutlineTriggerSchema = v.object({
   top: v.optional(Percent, 0),
   colour: v.optional(Colour, "MediumSpringGreen"),
   strokeWidth: v.optional(v.pipe(v.number(), v.minValue(0)), 5),
-  inset: v.optional(v.pipe(v.number(), v.minValue(0), v.maxValue(49)), 12),
+  inset: Inset,
 });
 
 export const OutlineTriggerFromHash = v.pipe(
