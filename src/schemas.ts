@@ -80,5 +80,22 @@ export const BoundingBoxFromHash = v.pipe(
   BoundingBoxSchema,
 );
 
+export const OutlineTriggerSchema = v.object({
+  name: v.string(),
+  top: v.optional(Percent, 0),
+  colour: v.optional(Colour, "MediumSpringGreen"),
+  strokeWidth: v.optional(v.pipe(v.number(), v.minValue(0)), 5),
+});
+
+export const OutlineTriggerFromHash = v.pipe(
+  v.string("Expected a mount value"),
+  v.nonEmpty("Mount value is empty"),
+  v.transform(parseCoreHash),
+  OutlineTriggerSchema,
+);
+
+// Types
+// -----
+
 export type Annotation = v.InferOutput<typeof AnnotationSchema>;
 export type BoundingBox = v.InferOutput<typeof BoundingBoxSchema>;
