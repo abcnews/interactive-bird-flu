@@ -13,16 +13,15 @@
   import { OutlineTriggerFromHash } from "../schemas.ts";
 
   const FADE_DURATION = 1000;
-  const IN_VIEWPORT_CONFIG = { rootMargin: "-12% 0px" } as const;
 
   type Outline = {
     name: string;
     component: Component;
   };
 
-  type Props = { width?: number; height?: number; activeOutlines?: string[] };
+  type Props = { width?: number; height?: number };
 
-  let { width = 4000, height = 13578, activeOutlines = [] }: Props = $props();
+  let { width = 4000, height = 13578 }: Props = $props();
 
   const outlines = new Map<string, Component>([
     ["seagull", Seagull],
@@ -63,19 +62,25 @@
       mount.classList.add("interactive-outline-trigger");
       mount.style.setProperty("--outline-trigger-top", `${result.output.top}%`);
 
-      return [
-        {
-          ...result.output,
-          component,
-          viewport: new IsInViewport(() => mount, IN_VIEWPORT_CONFIG),
-        },
-      ];
+      // The DLS global styles shift `div[id]:empty` and `a:not([href])[id]:empty`
+      // up by 2.7rem below 543px, which overrides our absolute positioning.
+      // A child element stops the `:empty` selector matching. Don't remove.
+      mount.innerHTML = "<span></span>";
+
+      const { name, colour, strokeWidth } = result.output;
+
+      const viewport = new IsInViewport(() => mount, {
+        rootMargin: `-${result.output.inset}% 0px`,
+      });
+
+      return [{ name, colour, strokeWidth, component, viewport }];
     });
 
     return () => {
       for (const mount of mounts) {
         mount.classList.remove("interactive-outline-trigger");
         mount.style.removeProperty("--outline-trigger-top");
+        mount.innerHTML = "";
       }
       triggers = [];
     };
@@ -89,7 +94,8 @@
       fill="none"
       stroke={trigger.colour}
       stroke-width={trigger.strokeWidth}
-      stroke-miterlimit="10"
+      stroke-linejoin="round"
+      stroke-linecap="round"
       transition:fade={{ duration: FADE_DURATION }}
     >
       <trigger.component />

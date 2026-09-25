@@ -85,6 +85,7 @@ export const OutlineTriggerSchema = v.object({
   top: v.optional(Percent, 0),
   colour: v.optional(Colour, "MediumSpringGreen"),
   strokeWidth: v.optional(v.pipe(v.number(), v.minValue(0)), 5),
+  inset: v.optional(v.pipe(v.number(), v.minValue(0), v.maxValue(49)), 12),
 });
 
 export const OutlineTriggerFromHash = v.pipe(
