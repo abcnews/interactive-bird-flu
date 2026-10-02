@@ -3,6 +3,7 @@ import * as v from "@valibot/valibot";
 import { parse as parseCoreHash } from "@abcnews/core-hash-converter";
 import Base62Str from "base62str";
 const base62 = Base62Str.createInstance();
+import { encode, decode } from '@abcnews/base-36-text';
 
 const UNNAMED_MOUNT_NAME = "nonamespecified";
 
@@ -40,6 +41,15 @@ const Colour = v.pipe(
 const Base62Text = v.pipe(
   v.union([v.string(), v.pipe(v.number(), v.transform(String))]),
   v.transform((s) => base62.decodeStr(s)),
+);
+
+// TODO: Test base36 out to see if it's more robust against hashes sometimes disappearing with
+// certain base62 string.
+
+/** Base36 output can be all digits, so `coerce` may hand us a number. */
+const Base36Text = v.pipe(
+  v.union([v.string(), v.pipe(v.number(), v.transform(String))]),
+  v.transform((s) => decode(s)),
 );
 
 /** How far in from the top and bottom of the screen before it fades. */

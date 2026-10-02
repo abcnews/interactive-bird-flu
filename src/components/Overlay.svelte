@@ -6,29 +6,22 @@
   import { IsInViewport } from "runed";
   import * as v from "@valibot/valibot";
 
-  import Seagull from "./outlines/Seagull.svelte";
-  import Dolphins from "./outlines/Dolphins.svelte";
-  import Quoll from "./outlines/Quoll.svelte";
-  import Kangaroo from "./outlines/Kangaroo.svelte";
+  import WildBirds from "./outlines/01_WildBirds.svelte";
+  import Dolphins from "./outlines/02_MarineMammals.svelte";
+  import WildMammals from "./outlines/03_WildMammals.svelte";
 
   import { OutlineTriggerFromHash } from "../schemas.ts";
 
   const FADE_DURATION = 1000;
 
-  type Outline = {
-    name: string;
-    component: Component;
-  };
-
   type Props = { width?: number; height?: number };
 
-  let { width = 4000, height = 13578 }: Props = $props();
+  let { width = 4000, height = 13855 }: Props = $props();
 
   const outlines = new Map<string, Component>([
-    ["seagull", Seagull],
-    ["dolphins", Dolphins],
-    ["quoll", Quoll],
-    ["kangaroo", Kangaroo],
+    ["wildbirds", WildBirds],
+    ["marinemammals", Dolphins],
+    ["wildmammals", WildMammals],
   ]);
 
   type Trigger = {

@@ -1,4 +1,5 @@
 {
   "preferPackageJson": true,
-  "minimumDependencyAge": "PT0M"
+  "minimumDependencyAge": "PT0M",
+  "allowScripts": ["npm:core-js@3.50.0", "npm:esbuild@0.28.2", "npm:fsevents@2.3.3"]
 }

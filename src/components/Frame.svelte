@@ -1,10 +1,10 @@
 <script lang="ts">
   import { getMountValue, selectMounts } from "@abcnews/mount-utils";
   import * as v from "@valibot/valibot";
-
   import { onMount } from "svelte";
-  import { IsInViewport, watch } from "runed";
+  import { IsInViewport } from "runed";
   import Portal from "svelte-portal";
+  import DOMPurify from "dompurify";
 
   import { AnnotationFromHash, BoundingBoxFromHash } from "../schemas.ts";
 
@@ -18,10 +18,6 @@
 
   const modifiedMounts = new Map<HTMLElement, Modification>();
 
-  const sleep = async (ms: number) => {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  };
-
   const init = () => {
     const frameEl = document.querySelector('[data-key="journey"]');
     frameEl?.classList.add("interactive-component-journey-frame");
@@ -29,8 +25,6 @@
 
     // Add the overlay scrim before annotations and bounding boxes in the DOM
     const figureEl = frameEl?.querySelector('figure[data-component="Figure"]');
-    // const overlay = overlayEl;
-    // if (overlay) figureEl?.after(overlay);
     const overlayHost = document.createElement("div");
     overlayHost.id = "interactive-overlay-host";
     figureEl?.after(overlayHost);
@@ -72,8 +66,10 @@
       const span = document.createElement("span");
 
       span.className = "annotation-text";
-      span.textContent = text;
-      span.setAttribute("data-text", text);
+      span.innerHTML = DOMPurify.sanitize(text, {
+        ALLOWED_TAGS: ["b", "strong", "br", "#text"],
+        ALLOWED_ATTR: [],
+      });
       mount.replaceChildren(span);
 
       const annotationProperties = {
@@ -83,6 +79,7 @@
         "--annotation-colour": colour,
         "--annotation-outline-colour": outlineColour,
         "--annotation-width": `${width}em`,
+        "--annotation-align": anchor === "left" ? "left" : "right",
       };
 
       mount.setAttribute("data-name", name);
@@ -234,19 +231,16 @@
       }
 
       .interactive-annotation-mount {
-        line-height: 1em;
+        line-height: normal;
         position: absolute;
-        text-align: center;
-        font-weight: 700;
-        letter-spacing: 0.06em;
+        text-align: var(--annotation-align);
+        font-weight: normal;
+        letter-spacing: 0;
         color: var(--annotation-colour);
         top: var(--annotation-top);
         left: var(--annotation-left, auto);
         right: var(--annotation-right, auto);
-        -webkit-text-fill-color: var(--annotation-colour);
-        -webkit-text-stroke: 2px transparent;
         max-width: var(--annotation-width);
-        isolation: isolate;
         transform: translateY(-50%);
 
         font-size: 0.875rem; // 14px
@@ -268,17 +262,8 @@
         }
 
         .annotation-text {
-          position: relative;
-          display: inline-block;
-        }
-
-        .annotation-text::after {
-          content: attr(data-text);
-          position: absolute;
-          top: 0;
-          left: 0;
           -webkit-text-stroke: 2px var(--annotation-outline-colour);
-          z-index: -1;
+          paint-order: stroke fill;
         }
       }
 
