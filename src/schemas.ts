@@ -1,9 +1,7 @@
 import tinycolor from "tinycolor2";
 import * as v from "@valibot/valibot";
 import { parse as parseCoreHash } from "@abcnews/core-hash-converter";
-import Base62Str from "base62str";
-const base62 = Base62Str.createInstance();
-import { encode, decode } from '@abcnews/base-36-text';
+import { decode } from "@abcnews/base-36-text";
 
 const UNNAMED_MOUNT_NAME = "nonamespecified";
 
@@ -37,16 +35,10 @@ const Colour = v.pipe(
   v.transform((s) => tinycolor(s).toRgbString()),
 );
 
-/** Base62 output can be all digits, so `coerce` may hand us a number. */
-const Base62Text = v.pipe(
-  v.union([v.string(), v.pipe(v.number(), v.transform(String))]),
-  v.transform((s) => base62.decodeStr(s)),
-);
-
-// TODO: Test base36 out to see if it's more robust against hashes sometimes disappearing with
-// certain base62 string.
-
-/** Base36 output can be all digits, so `coerce` may hand us a number. */
+/**
+ * Base36 output can be all digits (e.g. "31507"), which `coerce` in
+ * core-hash-converter turns into a number. Convert back before decoding.
+ */
 const Base36Text = v.pipe(
   v.union([v.string(), v.pipe(v.number(), v.transform(String))]),
   v.transform((s) => decode(s)),
@@ -56,7 +48,7 @@ const Base36Text = v.pipe(
 const Inset = v.optional(v.pipe(v.number(), v.minValue(0), v.maxValue(49)), 12);
 
 const AnnotationSchema = v.object({
-  text: Base62Text,
+  text: Base36Text,
   colour: v.optional(Colour, DEFAULTS.annotation.colour),
   outlineColour: v.optional(Colour, DEFAULTS.annotation.outlineColour),
   top: v.optional(Percent, DEFAULTS.annotation.top),

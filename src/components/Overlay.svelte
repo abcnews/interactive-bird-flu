@@ -9,6 +9,9 @@
   import WildBirds from "./outlines/01_WildBirds.svelte";
   import Dolphins from "./outlines/02_MarineMammals.svelte";
   import WildMammals from "./outlines/03_WildMammals.svelte";
+  import Agriculture from "./outlines/04_Agriculture.svelte";
+  import Pets from "./outlines/05_Pets.svelte";
+  import Humans from "./outlines/06_Humans.svelte";
 
   import { OutlineTriggerFromHash } from "../schemas.ts";
 
@@ -22,6 +25,9 @@
     ["wildbirds", WildBirds],
     ["marinemammals", Dolphins],
     ["wildmammals", WildMammals],
+    ["agriculture", Agriculture],
+    ["pets", Pets],
+    ["humans", Humans],
   ]);
 
   type Trigger = {
