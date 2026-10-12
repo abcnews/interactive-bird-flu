@@ -2,7 +2,7 @@
   import { getMountValue, selectMounts } from "@abcnews/mount-utils";
   import * as v from "@valibot/valibot";
   import { onMount } from "svelte";
-  import { IsInViewport } from "runed";
+  import { IsInViewport, ElementSize } from "runed";
   import Portal from "svelte-portal";
   import DOMPurify from "dompurify";
 
@@ -218,6 +218,13 @@
       figure[data-component="Figure"] {
         max-width: 100%;
         margin-inline: 0;
+
+        // Fix for aspect ratio rule making image
+        // taller than element so out of sync with
+        // SVG overlay.
+        img[data-component="Image"] {
+          max-height: 100%;
+        }
       }
 
       // Shared styles only. Separate styles further below.
