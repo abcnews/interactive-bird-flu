@@ -212,6 +212,13 @@
   @use "../styles/breakpoints.scss" as *;
 
   :global {
+    // Experimental max-width on very wide desktops
+    // .u-full.u-full {
+    //   --u-full-max: 1920px;
+    //   width: min(100cqi, var(--u-full-max));
+    //   margin-left: calc(50% - min(50cqi, var(--u-full-max) / 2)) !important;
+    // }
+
     .interactive-component-journey-frame {
       position: relative;
 
