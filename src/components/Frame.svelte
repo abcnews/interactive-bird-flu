@@ -24,10 +24,16 @@
     frameEl?.classList.add("u-full");
 
     // Add the overlay scrim before annotations and bounding boxes in the DOM
-    const figureEl = frameEl?.querySelector('figure[data-component="Figure"]');
+    // and after the underlying image panel(s).
+
+    const figures = frameEl?.querySelectorAll(
+      'figure[data-component="Figure"]',
+    );
+    const lastFigure = figures?.[figures.length - 1];
+
     const overlayHost = document.createElement("div");
     overlayHost.id = "interactive-overlay-host";
-    figureEl?.after(overlayHost);
+    lastFigure?.after(overlayHost);
 
     // Annotation text mounts
     // ----------------------
@@ -225,6 +231,7 @@
       figure[data-component="Figure"] {
         max-width: 100%;
         margin-inline: 0;
+        margin-block-end: 0;
 
         // Fix for aspect ratio rule making image
         // taller than element so out of sync with
