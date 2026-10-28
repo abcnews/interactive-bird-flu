@@ -7,9 +7,9 @@
   import DOMPurify from "dompurify";
 
   // Assets
-  import image01 from "../assets/01_data.jpg";
-  import image02 from "../assets/02_data.jpg";
-  import image03 from "../assets/03_data.jpg";
+  import image01 from "../assets/01_data.jpg?enhanced";
+  import image02 from "../assets/02_data.jpg?enhanced";
+  import image03 from "../assets/03_data.jpg?enhanced";
 
   import { AnnotationFromHash, BoundingBoxFromHash } from "../schemas.ts";
 
@@ -239,6 +239,8 @@
 
   .split-image {
     display: block;
+    width: 100%;
+    height: auto;
   }
 
   :global {
