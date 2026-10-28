@@ -6,6 +6,11 @@
   import Portal from "svelte-portal";
   import DOMPurify from "dompurify";
 
+  // Assets
+  import image01 from "../assets/01_data.jpg";
+  import image02 from "../assets/02_data.jpg";
+  import image03 from "../assets/03_data.jpg";
+
   import { AnnotationFromHash, BoundingBoxFromHash } from "../schemas.ts";
 
   import Overlay from "./Overlay.svelte";
@@ -211,19 +216,38 @@
 </script>
 
 <Portal target={"#interactive-overlay-host"}>
+  <enhanced:img
+    src={image01}
+    alt="First image of illustration"
+    class="split-image"
+  />
+  <enhanced:img
+    src={image02}
+    alt="Second image of illustration"
+    class="split-image"
+  />
+  <enhanced:img
+    src={image03}
+    alt="Third image of illustration"
+    class="split-image"
+  />
   <Overlay />
 </Portal>
 
 <style lang="scss">
   @use "../styles/breakpoints.scss" as *;
 
+  .split-image {
+    display: block;
+  }
+
   :global {
-    // Experimental max-width on very wide desktops
-    // .u-full.u-full {
-    //   --u-full-max: 1920px;
-    //   width: min(100cqi, var(--u-full-max));
-    //   margin-left: calc(50% - min(50cqi, var(--u-full-max) / 2)) !important;
-    // }
+    /*Experimental max-width on very wide desktops
+    .u-full.u-full {
+      --u-full-max: 1920px;
+      width: min(100cqi, var(--u-full-max));
+      margin-left: calc(50% - min(50cqi, var(--u-full-max) / 2)) !important;
+    }*/
 
     .interactive-component-journey-frame {
       position: relative;
@@ -233,15 +257,19 @@
         margin-inline: 0;
         margin-block-end: 0;
 
-        // Fix for aspect ratio rule making image
-        // taller than element so out of sync with
-        // SVG overlay.
+        /* Hide the CoreMedia image. We are replacing
+           it with some high resolution split images. */
+        display: none;
+
+        /* Fix for aspect ratio rule making image
+        taller than element so out of sync with
+        SVG overlay.*/
         img[data-component="Image"] {
           max-height: 100%;
         }
       }
 
-      // Shared styles only. Separate styles further below.
+      /*Shared styles only. Separate styles further below.*/
       .interactive-annotation-mount,
       .interactive-boundingbox-mount {
         transition: opacity 750ms ease;
@@ -264,22 +292,22 @@
         max-width: var(--annotation-width);
         transform: translateY(-50%);
 
-        font-size: 0.875rem; // 14px
+        font-size: 0.875rem; /* 14px */
 
         @include for-size(tablet-portrait-up) {
-          font-size: 1.125rem; // 18px
+          font-size: 1.125rem; /* 18px */
         }
 
         @include for-size(tablet-landscape-up) {
-          font-size: 1.375rem; // 22px
+          font-size: 1.375rem; /* 22px */
         }
 
         @include for-size(desktop-up) {
-          font-size: 1.625rem; // 26px
+          font-size: 1.625rem; /* 26px */
         }
 
         @include for-size(big-desktop-up) {
-          font-size: 1.75rem; // 28px
+          font-size: 1.75rem; /* 28px */
         }
 
         .annotation-text {

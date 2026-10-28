@@ -14,4 +14,5 @@ function emitResize(height = 0) {
 const observer = new ResizeObserver(() =>
   emitResize(document.documentElement.offsetHeight),
 );
+
 observer.observe(document.documentElement);

@@ -13,14 +13,24 @@ import { defineConfig } from "vite";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { abcCorsPlugin, es5EntryPlugin, getServer } from "@abcnews/aunty/vite";
+import { enhancedImages } from "@sveltejs/enhanced-img";
+import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 
 const isTS = existsSync(join(process.cwd(), "src/index.ts"));
 const entryPoint = isTS ? "src/index.ts" : "src/index.js";
 
 export default defineConfig({
-  base: "",
-  plugins: [svelte(), es5EntryPlugin(), abcCorsPlugin()],
+  base: "./",
+  plugins: [
+    svelte({
+      preprocess: vitePreprocess(),
+    }),
+    es5EntryPlugin(),
+    abcCorsPlugin(),
+    enhancedImages(),
+  ],
   server: getServer(),
+
   build: {
     rollupOptions: {
       input: {
