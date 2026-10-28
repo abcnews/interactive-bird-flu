@@ -217,19 +217,22 @@
 
 <Portal target={"#interactive-overlay-host"}>
   <enhanced:img
-    src={image01}
-    alt="First image of illustration"
+    src="../assets/01_data.jpg"
+    alt="Illustration of bird flu animals."
     class="split-image"
+    sizes="100vw"
   />
   <enhanced:img
-    src={image02}
-    alt="Second image of illustration"
+    src="../assets/02_data.jpg"
+    alt=""
     class="split-image"
+    sizes="100vw"
   />
   <enhanced:img
-    src={image03}
-    alt="Third image of illustration"
+    src="../assets/03_data.jpg"
+    alt=""
     class="split-image"
+    sizes="100vw"
   />
   <Overlay />
 </Portal>
